@@ -20,6 +20,7 @@ from __future__ import print_function
 import argparse
 import sys
 import time
+import json
 
 import numpy as np
 import tensorflow as tf
@@ -69,13 +70,13 @@ def load_labels(label_file):
 
 if __name__ == "__main__":
   file_name = "tf_files/flower_photos/daisy/3475870145_685a19116d.jpg"
-  model_file = "tf_files/retrained_graph.pb"
-  label_file = "tf_files/retrained_labels.txt"
-  input_height = 224
-  input_width = 224
+  model_file = "../../libraries/tensorflow/tf_files/retrained_graph.pb"
+  label_file = "../../libraries/tensorflow/tf_files/retrained_labels.txt"
+  input_height = 299
+  input_width = 299
   input_mean = 128
   input_std = 128
-  input_layer = "input"
+  input_layer = "Mul"
   output_layer = "final_result"
 
   parser = argparse.ArgumentParser()
@@ -130,8 +131,17 @@ if __name__ == "__main__":
 
   top_k = results.argsort()[-5:][::-1]
   labels = load_labels(label_file)
-
-  print('\nEvaluation time (1-image): {:.3f}s\n'.format(end-start))
+  
+#  print('\nEvaluation time (1-image): {:.3f}s\n'.format(end-start))
   template = "{} (score={:0.5f})"
-  for i in top_k:
-    print(template.format(labels[i], results[i]))
+#  for i in top_k:
+#    print(template.format(labels[i], results[i]))
+
+  sortida="{ "
+  for i in range(0, len(top_k)):
+    if i < len(top_k)-1:
+      sortida+="\""+labels[i]+'\": '+str(results[i])+', '
+  else:
+      sortida+="\""+labels[i]+'\": '+str(results[i])+' }'
+#  print("---------------------")
+  print(json.dumps(sortida))
